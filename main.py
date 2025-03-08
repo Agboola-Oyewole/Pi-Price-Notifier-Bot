@@ -1,4 +1,5 @@
 import asyncio
+import threading
 
 import requests
 from dotenv import load_dotenv
@@ -53,6 +54,13 @@ async def send_alerts():
         await asyncio.sleep(30)  # Wait for 6 hours before next check
 
 
+# Start the async task in a separate thread
+def start_background_task():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(send_alerts())
+
+
 @app.route('/')
 def home():
     return "Bot is running!"
@@ -60,6 +68,5 @@ def home():
 
 # Run the bot
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.create_task(send_alerts())  # Start your bot function
+    threading.Thread(target=start_background_task, daemon=True).start()  # Run in a separate thread
     app.run(host="0.0.0.0", port=10000)
