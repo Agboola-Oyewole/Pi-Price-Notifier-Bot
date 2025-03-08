@@ -52,4 +52,6 @@ async def send_alerts():
 
 # Run the bot
 if __name__ == "__main__":
-    asyncio.run(send_alerts())
+    loop = asyncio.get_event_loop()
+    loop.create_task(send_alerts())  # Start your function
+    loop.run_forever()
