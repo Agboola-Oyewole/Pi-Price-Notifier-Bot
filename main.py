@@ -2,8 +2,11 @@ import asyncio
 
 import requests
 from dotenv import load_dotenv
+from flask import Flask
 
 from emailing_file import PriceAlert  # Import handles email sending
+
+app = Flask(__name__)
 
 load_dotenv()
 price_bot = PriceAlert()
@@ -50,8 +53,13 @@ async def send_alerts():
         await asyncio.sleep(3 * 60 * 60)  # Wait for 6 hours before next check
 
 
+@app.route('/')
+def home():
+    return "Bot is running!"
+
+
 # Run the bot
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.create_task(send_alerts())  # Start your function
-    loop.run_forever()
+    loop.create_task(send_alerts())  # Start your bot function
+    app.run(host="0.0.0.0", port=10000)
