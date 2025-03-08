@@ -51,7 +51,7 @@ async def send_alerts():
 
         print("✅ Alerts sent! Waiting for next interval...")
 
-        await asyncio.sleep(30)  # Wait for 6 hours before next check
+        await asyncio.sleep(3 * 60 * 60)  # Wait for 6 hours before next check
 
 
 # Start the async task in a separate thread
