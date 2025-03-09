@@ -1,4 +1,5 @@
 import asyncio
+import threading
 
 import requests
 from dotenv import load_dotenv
@@ -51,5 +52,15 @@ def run_alerts():
     return "Alerts sent!"
 
 
+@app.route('/ping')
+def ping():
+    return "I'm alive!", 200
+
+
 if __name__ == "__main__":
+    # Start Telegram bot in a separate thread
+    telegram_thread = threading.Thread(target=price_bot.run_telegram_bot, daemon=True)
+    telegram_thread.start()
+
+    # Start Flask server
     app.run(host="0.0.0.0", port=10000)

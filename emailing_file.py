@@ -2,7 +2,21 @@ import os
 import smtplib
 from email.message import EmailMessage
 
-from telegram import Bot
+from telegram import Bot, Update
+from telegram.ext import Application, CommandHandler, CallbackContext
+
+
+async def start_command(update: Update, context: CallbackContext):
+    """Handles the /start command."""
+    welcome_message = (
+        "👋 *Welcome to the Pi Price Alert Bot!* 🚀\n\n"
+        "This bot provides regular updates on the price of Pi Network (PI).\n\n"
+        "✅ Price alerts are sent every 3 hours.\n"
+        "📊 You'll receive both USD and NGN equivalent prices.\n"
+        "💬 Just stay in this chat and wait for updates.\n\n"
+        "Type /help to learn more."
+    )
+    await update.message.reply_text(welcome_message, parse_mode="Markdown")
 
 
 class PriceAlert:
@@ -13,6 +27,7 @@ class PriceAlert:
         self.SENDER_NAME = os.getenv('SENDER_NAME')
         self.TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
         self.CHAT_ID = os.getenv('CHAT_ID')
+        self.bot = Bot(token=self.TELEGRAM_TOKEN)
 
     def send_email(self, message):
         sender_email = self.EMAIL_ADDRESS
@@ -107,6 +122,15 @@ class PriceAlert:
             server.send_message(msg)
 
     async def send_telegram(self, message):
-        bot = Bot(token=self.TELEGRAM_TOKEN)
-        await bot.send_message(chat_id=self.CHAT_ID,
-                               text=f"Good day,\n\nThe current price of PI is ${message[0]}\nPi price in NGN: ₦{message[1]}")
+        await self.bot.send_message(chat_id=self.CHAT_ID,
+                                    text=f"Good day,\n\nThe current price of PI is ${message[0]}\nPi price in NGN: ₦{message[1]}")
+
+    def run_telegram_bot(self):
+        """Starts the bot and listens for messages."""
+        app = Application.builder().token(self.TELEGRAM_TOKEN).build()
+
+        # Add command handlers
+        app.add_handler(CommandHandler("start", start_command))
+
+        # Start polling
+        app.run_polling()
