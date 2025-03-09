@@ -1,5 +1,4 @@
 import asyncio
-import threading
 
 import requests
 from dotenv import load_dotenv
@@ -58,9 +57,20 @@ def ping():
 
 
 if __name__ == "__main__":
-    # Start Telegram bot in a separate thread
-    telegram_thread = threading.Thread(target=price_bot.run_telegram_bot, daemon=True)
-    telegram_thread.start()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
-    # Start Flask server
-    app.run(host="0.0.0.0", port=10000)
+
+    async def main():
+        # Start Telegram bot (non-blocking)
+        bot_task = asyncio.create_task(price_bot.run_telegram_bot())
+
+        # Start Flask server in a separate thread
+        from concurrent.futures import ThreadPoolExecutor
+        executor = ThreadPoolExecutor(max_workers=1)
+        flask_task = loop.run_in_executor(executor, app.run, "0.0.0.0", 10000)
+
+        await asyncio.gather(bot_task, flask_task)
+
+
+    loop.run_until_complete(main())

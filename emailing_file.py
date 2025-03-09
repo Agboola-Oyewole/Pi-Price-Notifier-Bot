@@ -8,13 +8,13 @@ from telegram.ext import Application, CommandHandler, CallbackContext
 
 async def start_command(update: Update, context: CallbackContext):
     """Handles the /start command."""
+    print("🚀 /start command received!")
     welcome_message = (
         "👋 *Welcome to the Pi Price Alert Bot!* 🚀\n\n"
         "This bot provides regular updates on the price of Pi Network (PI).\n\n"
         "✅ Price alerts are sent every 3 hours.\n"
         "📊 You'll receive both USD and NGN equivalent prices.\n"
-        "💬 Just stay in this chat and wait for updates.\n\n"
-        "Type /help to learn more."
+        "💬 Just stay in this chat and wait for updates."
     )
     await update.message.reply_text(welcome_message, parse_mode="Markdown")
 
@@ -127,6 +127,7 @@ class PriceAlert:
 
     def run_telegram_bot(self):
         """Starts the bot and listens for messages."""
+        print("✅ Telegram bot is running...")
         app = Application.builder().token(self.TELEGRAM_TOKEN).build()
 
         # Add command handlers
