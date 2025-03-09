@@ -125,13 +125,15 @@ class PriceAlert:
         await self.bot.send_message(chat_id=self.CHAT_ID,
                                     text=f"Good day,\n\nThe current price of PI is ${message[0]}\nPi price in NGN: ₦{message[1]}")
 
-    def run_telegram_bot(self):
-        """Starts the bot and listens for messages."""
+    async def run_telegram_bot(self):
+        """Starts the bot and listens for messages asynchronously."""
         print("✅ Telegram bot is running...")
         app = Application.builder().token(self.TELEGRAM_TOKEN).build()
 
         # Add command handlers
         app.add_handler(CommandHandler("start", start_command))
 
-        # Start polling
-        app.run_polling()
+        # Start polling asynchronously
+        await app.initialize()
+        await app.start()
+        await app.run_polling()  # ✅ Corrected

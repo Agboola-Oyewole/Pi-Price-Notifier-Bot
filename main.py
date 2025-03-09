@@ -1,4 +1,5 @@
 import asyncio
+import threading
 
 import requests
 from dotenv import load_dotenv
@@ -57,20 +58,17 @@ def ping():
 
 
 if __name__ == "__main__":
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
-
     async def main():
-        # Start Telegram bot (non-blocking)
-        bot_task = asyncio.create_task(price_bot.run_telegram_bot())
-
-        # Start Flask server in a separate thread
-        from concurrent.futures import ThreadPoolExecutor
-        executor = ThreadPoolExecutor(max_workers=1)
-        flask_task = loop.run_in_executor(executor, app.run, "0.0.0.0", 10000)
-
-        await asyncio.gather(bot_task, flask_task)
+        # Run Telegram bot
+        await price_bot.run_telegram_bot()  # Ensure this function is async
 
 
-    loop.run_until_complete(main())
+    # Start Flask server in a separate thread
+    flask_thread = threading.Thread(target=lambda: app.run(host="0.0.0.0", port=10000), daemon=True)
+    flask_thread.start()
+
+    try:
+        loop = asyncio.get_running_loop()
+        loop.create_task(main())  # Run bot as an async task in existing event loop
+    except RuntimeError:
+        asyncio.run(main())  # Start new event loop only if none is running
