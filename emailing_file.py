@@ -2,21 +2,20 @@ import os
 import smtplib
 from email.message import EmailMessage
 
-from telegram import Bot, Update
-from telegram.ext import Application, CommandHandler, CallbackContext
+from telegram import Bot
 
 
-async def start_command(update: Update, context: CallbackContext):
-    """Handles the /start command."""
-    print("🚀 /start command received!")
-    welcome_message = (
-        "👋 *Welcome to the Pi Price Alert Bot!* 🚀\n\n"
-        "This bot provides regular updates on the price of Pi Network (PI).\n\n"
-        "✅ Price alerts are sent every 3 hours.\n"
-        "📊 You'll receive both USD and NGN equivalent prices.\n"
-        "💬 Just stay in this chat and wait for updates."
-    )
-    await update.message.reply_text(welcome_message, parse_mode="Markdown")
+# async def start_command(update: Update, context: CallbackContext):
+#     """Handles the /start command."""
+#     print("🚀 /start command received!")
+#     welcome_message = (
+#         "👋 *Welcome to the Pi Price Alert Bot!* 🚀\n\n"
+#         "This bot provides regular updates on the price of Pi Network (PI).\n\n"
+#         "✅ Price alerts are sent every 3 hours.\n"
+#         "📊 You'll receive both USD and NGN equivalent prices.\n"
+#         "💬 Just stay in this chat and wait for updates."
+#     )
+#     await update.message.reply_text(welcome_message, parse_mode="Markdown")
 
 
 class PriceAlert:
@@ -123,15 +122,15 @@ class PriceAlert:
 
     async def send_telegram(self, message):
         await self.bot.send_message(chat_id=self.CHAT_ID,
-                                    text=f"Good day,\n\nThe current price of PI is ${message[0]}\nPi price in NGN: ₦{message[1]}")
+                                    text=f"Good day Delmar,\n\nThe current price of PI is ${message[0]}\nPi price in NGN: ₦{message[1]}")
 
-    def run_telegram_bot(self):
-        """Starts the bot and listens for messages."""
-        print("✅ Telegram bot is running...")
-        app = Application.builder().token(self.TELEGRAM_TOKEN).build()
-
-        # Add command handlers
-        app.add_handler(CommandHandler("start", start_command))
-
-        # Start polling
-        app.run_polling()
+    # async def run_telegram_bot(self):
+    #     """Starts the bot and listens for messages."""
+    #     print("✅ Telegram bot is running...")
+    #     app = Application.builder().token(self.TELEGRAM_TOKEN).build()
+    #
+    #     # Add command handlers
+    #     app.add_handler(CommandHandler("start", start_command))
+    #
+    #     # Start polling (runs in the main thread)
+    #     await app.run_polling()
