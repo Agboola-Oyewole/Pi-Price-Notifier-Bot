@@ -57,18 +57,17 @@ def ping():
     return "I'm alive!", 200
 
 
+def start_telegram_bot():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(price_bot.run_telegram_bot())
+
+
+# ------------------ MAIN EXECUTION ------------------
+
 if __name__ == "__main__":
-    async def main():
-        # Run Telegram bot
-        await price_bot.run_telegram_bot()  # Ensure this function is async
+    # Start Telegram bot in a separate thread
+    threading.Thread(target=start_telegram_bot, daemon=True).start()
 
-
-    # Start Flask server in a separate thread
-    flask_thread = threading.Thread(target=lambda: app.run(host="0.0.0.0", port=10000), daemon=True)
-    flask_thread.start()
-
-    try:
-        loop = asyncio.get_running_loop()
-        loop.create_task(main())  # Run bot as an async task in existing event loop
-    except RuntimeError:
-        asyncio.run(main())  # Start new event loop only if none is running
+    # Start Flask server
+    app.run(host="0.0.0.0", port=10000, use_reloader=False)
