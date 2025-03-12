@@ -40,8 +40,8 @@ async def convert_pi_to_naira():
 async def send_alerts():
     price_data = await convert_pi_to_naira()
     if isinstance(price_data, list):
-        price_bot.send_email(price_data)
         await price_bot.send_telegram(price_data)
+        price_bot.send_email(price_data)
     print("✅ Alerts sent!")
 
 
